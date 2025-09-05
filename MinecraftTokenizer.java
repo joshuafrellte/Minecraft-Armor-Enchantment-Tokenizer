@@ -1,13 +1,14 @@
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.ArrayList;
 
 public class MinecraftTokenizer {
     public static void main(String[] args) {
         MinecraftTokenizer tokenizer = new MinecraftTokenizer();
         String input = tokenizer.getString();
-        String[] tokens = tokenizer.tokenize(input);
+        String[] tokens = tokenizer.splitToArray(input);
+//        for (int i=0; i<tokens.length; i++) {
+//            System.out.println(tokens[i]);
+//        }
 
         System.out.println("Phase 1: CFG-Based Classification");
         tokenizer.showTokens(tokens);
@@ -20,6 +21,58 @@ public class MinecraftTokenizer {
         return sc.nextLine();
     }
 
+    public String[] splitToArray(String str) {
+        str += " ";
+        ArrayList<String> tokensList = new ArrayList<>();
+
+        String holdToken = "";
+        for (int i = 0; i < str.length(); i++) {
+            if (Character.isWhitespace(str.charAt(i)) || str.charAt(i) == ',') {
+                if (!holdToken.isEmpty()) {
+                    tokensList.add(holdToken);
+                    holdToken = "";
+                }
+                if (str.charAt(i) == ',') {
+                    tokensList.add(String.valueOf(str.charAt(i)));
+                }
+            } else {
+                holdToken += str.charAt(i);
+            }
+        }
+        return tokensList.toArray(new String[0]);
+    }
+
+    /*
+    // split string by whitespace(" ")
+    public String[] splitToArray(String str) {
+       // counting space between words to determine size
+        int tokenCount = 0;
+        str += " ";
+        for (int i=0; i<str.length(); i++) {
+            if (Character.isWhitespace(str.charAt(i)) || str.charAt(i)==',') {
+                tokenCount++;
+            }   // outputs null, need to token out comma to fill up nulls
+        }
+        //System.out.println(tokenCount);
+
+        // add words to tokenized array
+        String[] arr = new String[tokenCount];
+        String hold = "";
+        int indexCount = 0;
+        for (int i=0; i<str.length(); i++) {
+            if (Character.isWhitespace(str.charAt(i))) {
+                arr[indexCount] = hold;
+                hold = "";
+                indexCount++;
+            }
+            else {
+                hold += str.charAt(i);
+            }
+        }
+        return arr;
+    } */
+
+    /*
     public String[] tokenize(String enchantedArmor) {
         // distinguishing tokens with spaces and multiple words
         String regex = "curse of vanishing|curse of binding|blast protection|fire protection|projectile protection|,|\\b\\w+\\b";
@@ -35,6 +88,7 @@ public class MinecraftTokenizer {
         }
         return enchanted_armor_tokenized.toArray(new String[0]);
     }
+    */
 
     public void showTokens(String[] enchantedArmorToken) {
         TokenChecker checker = new TokenChecker();

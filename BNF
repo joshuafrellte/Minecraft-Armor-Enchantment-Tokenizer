@@ -23,3 +23,36 @@
 <enchantment_without_level> ::= “Mending” | “Curse of Vanishing” | “Curse of Binding”
 
 <level> ::= “I” | “II” | “III” | “IV”
+
+
+logic without using pattern and matcher classes
+if ((token[i]+" "+token[i+1]).equals("blast protection")) {
+        // code here...
+        i++;
+} else if ((token[i]+" "+token[i+1]+" "+token[i+2]).equals("curse of vanishing")) {
+        // code here...
+        i += 2;
+}
+
+logic of tokenizer via character traversing
+
+spaceCount = 0;
+for (int i=0; i<string.length(); i++) {
+    if (string.charAt(i)==' ') {
+        spaceCount++;
+    }
+}
+
+String[] arr = new String[spaceCount+1];
+String hold = "";
+int indexCount = 0;
+for (int i=0; i<string.length(); i++) {
+    if (Character.isWhitespace(string.charAt(i))) {
+        arr[indexCount] = hold;
+        hold = "";
+        indexCount++;
+    } else {
+        hold += string.charAt(i);
+    }
+}
+
