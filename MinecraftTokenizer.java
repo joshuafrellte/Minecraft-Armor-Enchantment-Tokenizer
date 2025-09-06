@@ -2,16 +2,18 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 public class MinecraftTokenizer {
+    TokenChecker checker;
+    MinecraftTokenizer tokenizer;
     public static void main(String[] args) {
         MinecraftTokenizer tokenizer = new MinecraftTokenizer();
         String input = tokenizer.getString();
-        String[] tokens = tokenizer.splitToArray(input);
+        String[] preTokens = tokenizer.splitToArray(input);
 //        for (int i=0; i<tokens.length; i++) {
 //            System.out.println(tokens[i]);
 //        }
 
         System.out.println("Phase 1: CFG-Based Classification");
-        tokenizer.showTokens(tokens);
+        tokenizer.showTokens(tokenizer.tokenizeArray(preTokens));
     }
 
     public String getString() {
@@ -41,6 +43,86 @@ public class MinecraftTokenizer {
         }
         return tokensList.toArray(new String[0]);
     }
+
+    // blast protection, fire protection, projectile protection
+    // curse of binding, curse of vanishing
+    public String[] tokenizeArray(String[] arr) {
+        checker = new TokenChecker();
+        ArrayList<String> tokenized = new ArrayList<>();
+        int i = 0;
+        while (i < arr.length) {
+            String threeWords = "", twoWords = "";
+
+            if (i+2 < arr.length) {
+                threeWords = arr[i]+" "+arr[i+1]+" "+arr[i+2];
+            }
+            if (i+1 < arr.length) {
+                twoWords = arr[i]+" "+ arr[i+1];
+            }
+
+            if (checker.isEnchantmentWithoutLevel(threeWords)) {
+                tokenized.add(threeWords);
+                i+=3;
+            } else if (checker.isArmorEnchantment(twoWords)) {
+                tokenized.add(twoWords);
+                i+=2;
+            } else {
+                tokenized.add(arr[i]);
+                i++;
+            }
+        }
+        return tokenized.toArray(new String[0]);
+    }
+
+    /*
+    public String[] tokenizeArray(String[] arr) {
+        checker = new TokenChecker();
+        ArrayList<String> tokenized = new ArrayList<>();
+        String twoWords="", threeWords="";
+        for (int i=0; i<arr.length; i++) {
+            if (i+1 < arr.length-2) {
+                twoWords = arr[i]+" "+arr[i+1];
+                System.out.println(twoWords);
+                if (checker.isArmorEnchantment(twoWords) && i+2 < arr.length && checker.isLevel(arr[i+2])) {
+                    tokenized.add(twoWords);
+                    tokenized.add(arr[i+2]);
+                    i++;
+                    continue;
+                }
+            }
+            else if (i+2 < arr.length-3) {
+                threeWords = arr[i]+" "+arr[i+1]+" "+arr[i+2];
+                System.out.println(threeWords);
+                if (checker.isEnchantmentWithoutLevel(threeWords)) {
+                    tokenized.add(threeWords);
+                    i+=2;
+                    continue;
+                }
+            }
+
+
+            tokenized.add(arr[i]);
+        }
+        return tokenized.toArray(new String[0]);
+    } */
+
+    public boolean isTwoWordEnch(String two_words) {
+        if (two_words.equals("blast protection") || two_words.equals("fire protection") || two_words.equals("projectile protection")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isThreeWordEnch(String three_words) {
+        if (three_words.equals("curse of vanishing") || three_words.equals("curse of binding")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 
     /*
     // split string by whitespace(" ")
@@ -124,66 +206,3 @@ public class MinecraftTokenizer {
         }
     }
 }
-    /*
-    public static boolean isArmorMaterial(String armorMat) {
-        if (armorMat.equals("chainmail") || armorMat.equals("iron") || armorMat.equals("gold") || armorMat.equals("diamond") || armorMat.equals("netherite") || armorMat.equals("leather"))
-            return true;
-        else
-            return false;
-    }
-
-    public static boolean isLeather(String leather) {
-        if (leather.equals("leather"))
-            return true;
-        else
-            return false;
-    }
-
-    public static boolean isLeatherArmorPiece(String leatherArmorPiece) {
-        if (leatherArmorPiece.equals("cap") || leatherArmorPiece.equals("tunic") || leatherArmorPiece.equals("pants") || leatherArmorPiece.equals("boots"))
-            return true;
-        else
-            return false;
-    }
-
-    public static boolean isArmorPiece(String armorPiece) {
-        if (armorPiece.equals("helmet") || armorPiece.equals("chestplate") || armorPiece.equals("leggings") || armorPiece.equals("boots"))
-            return true;
-        else
-            return false;
-    }
-
-    public static boolean isPreposition(String prep) {
-        if (prep.equals("with"))
-            return true;
-        else
-            return false;
-    }
-
-    public static boolean isArmorEnchantment(String armorEnch) {
-        if (armorEnch.equals("protection") || armorEnch.equals("blast protection") || armorEnch.equals("protection") || armorEnch.equals("protection"))
-            return true;
-        else
-            return false;
-    }
-
-    public static boolean isEnchantmentWithoutLevel(String enchNoLvl) {
-        if (enchNoLvl.equals("mending") || enchNoLvl.equals("curse of vanishing") || enchNoLvl.equals("curse of binding"))
-            return true;
-        else
-            return false;
-    }
-
-    public static boolean isLevel(String lvl) {
-        if (lvl.equals("i") || lvl.equals("ii") || lvl.equals("iii") || lvl.equals("iv"))
-            return true;
-        else
-            return false;
-    }
-
-
-
-
-
-}
-*/

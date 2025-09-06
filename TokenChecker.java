@@ -5,8 +5,8 @@ public class TokenChecker {
     private static List<String> ARMOR_MATERIALS = Arrays.asList("leather", "chainmail", "iron", "gold", "diamond", "netherite");
     private static List<String> LEATHER_ARMOR_PIECES = Arrays.asList("cap", "tunic", "pants", "boots");
     private static List<String> ARMOR_PIECES = Arrays.asList("helmet", "chestplate", "leggings", "boots");
-    private static List<String> ARMOR_ENCHANTMENTS = Arrays.asList("protection", "blast protection", "fire protection", "projectile protection", "thorns");
-    private static List<String> ENCHANTMENTS_WITHOUT_LEVEL = Arrays.asList("mending", "curse of vanishing", "curse of binding");
+    private static List<String> ARMOR_ENCHANTMENTS = Arrays.asList("blast protection", "fire protection", "projectile protection", "thorns", "protection");
+    private static List<String> ENCHANTMENT_WITHOUT_LEVEL = Arrays.asList("mending", "curse of vanishing", "curse of binding");
     private static List<String> LEVELS = Arrays.asList("i", "ii", "iii", "iv");
 
     public boolean isArmorMaterial(String armorMat) {
@@ -38,7 +38,7 @@ public class TokenChecker {
     }
 
     public boolean isEnchantmentWithoutLevel(String enchNoLvl) {
-        return ENCHANTMENTS_WITHOUT_LEVEL.contains(enchNoLvl);
+        return ENCHANTMENT_WITHOUT_LEVEL.contains(enchNoLvl);
     }
 
     public boolean isLevel(String lvl) {
