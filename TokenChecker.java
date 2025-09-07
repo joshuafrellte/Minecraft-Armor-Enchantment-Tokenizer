@@ -33,9 +33,7 @@ public class TokenChecker {
         return ARMOR_ENCHANTMENTS.contains(armorEnch);
     }
 
-    public boolean isEnchantmentWithLevel(String enchWithLvl) {
-        return isArmorEnchantment(enchWithLvl) || enchWithLvl.equals("unbreaking");
-    }
+    public boolean isEnchantmentWithLevel(String enchWithLvl) { return isArmorEnchantment(enchWithLvl) || enchWithLvl.equals("unbreaking"); }
 
     public boolean isEnchantmentWithoutLevel(String enchNoLvl) {
         return ENCHANTMENT_WITHOUT_LEVEL.contains(enchNoLvl);
