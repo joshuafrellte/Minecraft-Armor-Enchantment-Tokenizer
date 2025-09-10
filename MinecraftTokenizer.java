@@ -11,7 +11,7 @@ public class MinecraftTokenizer {
         Deriver deriver = new Deriver();
         System.out.println("[]=====[ MINECRAFT ARMOR ENCHANTMENT TOKENIZER =====>");
         String input = tokenizer.getString();
-        System.out.println("Phase 1: CFG-Based Classification");
+        System.out.println("\n~~~~~ Phase 1: CFG-Based Classification ~~~~~");
         /*
         if (spaceBefore(input)) {
             System.out.println("Input does not follow grammar rules. Go play Minecraft and check.");
@@ -20,7 +20,7 @@ public class MinecraftTokenizer {
         String[] tokens = tokenizer.tokenize(input);
         tokenizer.showTokens(tokens);
 
-        System.out.println("\nPhase 2: Derivation");
+        System.out.println("\n~~~~~ Phase 2: Derivation ~~~~~");
 
         if (tokenizer.isValid) {
             deriver.derive(removeSpace(tokens));
@@ -84,36 +84,36 @@ public class MinecraftTokenizer {
 
                 // determine what token type
                 if (checker.isArmorMaterial(enchantedArmorToken[i]))
-                    System.out.println(hold + "\t\t→\t<armor_material>");
+                    System.out.println(hold + "\t\t⇒\t<armor_material>");
                 else if (i > 0 && checker.isLeather(enchantedArmorToken[i - 1]) && checker.isLeatherArmorPiece(enchantedArmorToken[i]))
-                    System.out.println(hold + "\t\t→\t<leather_armor_piece>");
+                    System.out.println(hold + "\t\t⇒\t<leather_armor_piece>");
                 else if (checker.isArmorPiece(enchantedArmorToken[i]))
-                    System.out.println(hold + "\t\t→\t<armor_piece>");
+                    System.out.println(hold + "\t\t⇒\t<armor_piece>");
                 else if (checker.isPreposition(enchantedArmorToken[i]))
-                    System.out.println(hold + "\t\t→\t<preposition>");
+                    System.out.println(hold + "\t\t⇒\t<preposition>");
                 else if (checker.isEnchantmentWithLevel(enchantedArmorToken[i])) {
                     if (checker.isArmorEnchantment(enchantedArmorToken[i]))
-                        System.out.println(hold + "\t→\t<armor_enchantment>");
+                        System.out.println(hold + "\t⇒\t<armor_enchantment>");
                     else
-                        System.out.println(hold + "\t→\t<enchantment_with_level>");
-                } else if (checker.isEnchantmentWithLevel(enchantedArmorToken[i - 1]) && checker.isLevel(enchantedArmorToken[i]))
-                    System.out.println(hold + "\t\t\t→\t<level>");
+                        System.out.println(hold + "\t⇒\t<enchantment_with_level>");
+                } else if (checker.isLevel(enchantedArmorToken[i])) // checker.isEnchantmentWithLevel(enchantedArmorToken[i - 1]) &&
+                    System.out.println(hold + "\t\t\t⇒\t<level>");
                 else if (checker.isEnchantmentWithoutLevel(enchantedArmorToken[i]))
-                    System.out.println(hold + "\t→\t<enchantment_without_level>");
+                    System.out.println(hold + "\t⇒\t<enchantment_without_level>");
                 else if (checker.isPunctuation(enchantedArmorToken[i]))
-                    System.out.println(hold + "\t\t\t→\t<punctuation>");
+                    System.out.println(hold + "\t\t\t⇒\t<punctuation>");
                 else if (checker.isOneSpace(enchantedArmorToken[i])) {
-                    System.out.println("\"" + hold + "\"" + "\t\t→\t<space>");
+                    System.out.println("\"" + hold + "\"" + "\t\t⇒\t<space>");
                     isValid = true;
                     if (checker.isOneSpace(enchantedArmorToken[i-1])) {
-                        System.out.println("\"" + hold + "\"" + "\t\t→\t<space>");
+                        System.out.println("\"" + hold + "\"" + "\t\t\t\t⇒\t<space>");
                         //System.out.println("Multiple spaces are not allowed! Play Minecraft!");
                         isValid = false;
                         //break;
                     }
                 }
                 else
-                    System.out.println(hold + "\t\t→\t<unknown>");
+                    System.out.println(hold + "\t\t⇒\t<unknown>");
             } catch (ArrayIndexOutOfBoundsException e) {
                 //System.out.println("Input does not follow grammar rules. Go play Minecraft and check.");
             }
