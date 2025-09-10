@@ -1,27 +1,51 @@
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MinecraftTokenizer {
-    TokenChecker checker;
-    MinecraftTokenizer tokenizer;
-    public String[] tokens;
-
+    boolean isValid;
     public static void main(String[] args) {
         MinecraftTokenizer tokenizer = new MinecraftTokenizer();
-        String input = tokenizer.getString();
-        String[] preTokens = tokenizer.splitToArray(input);
-        tokenizer.tokens = tokenizer.tokenizeArray(preTokens);
-
-        String[] originalTokens = tokenizer.tokenizeArray(preTokens);
-        String[] lowerCaseTokens = tokenizer.tokenizeArrayToLowerCase(preTokens);
-
-        System.out.println("Phase 1: CFG-Based Classification");
-        tokenizer.showTokens(tokenizer.tokenizeArray(preTokens));
-
-        System.out.println();
-
         Deriver deriver = new Deriver();
-        deriver.derive(originalTokens, lowerCaseTokens);
+        String input = tokenizer.getString();
+        System.out.println("Phase 1: CFG-Based Classification");
+        /*
+        if (spaceBefore(input)) {
+            System.out.println("Input does not follow grammar rules. Go play Minecraft and check.");
+        }
+         */
+        String[] tokens = tokenizer.tokenize(input);
+        tokenizer.showTokens(tokens);
+
+        System.out.println("\nPhase 2: Derivation");
+        if (tokenizer.isValid) {
+            deriver.derive(removeSpace(tokens));
+        } else {
+            System.out.println("Syntax error too");
+        }
+
+
+
+    }
+
+
+    public static boolean spaceBefore(String str) {
+        char firstChar = str.charAt(0);
+        if (firstChar==' ') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    // you wont guess what this does
+    public static String[] removeSpace(String[] arr) {
+        ArrayList<String> newList = new ArrayList<>();
+        for (String element : arr) {
+            if (!element.equals(" "))
+                newList.add(element);
+        } return newList.toArray(new String[0]);
     }
 
     public String getString() {
@@ -31,118 +55,67 @@ public class MinecraftTokenizer {
         return sc.nextLine();
     }
 
-    // traverses string via characters, splits by " "
-    public String[] splitToArray(String str) {
-        str += " "; // for last token
-        ArrayList<String> tokensList = new ArrayList<>();
+    public String[] tokenize(String enchantedArmor) {
+        // distinguishing tokens with spaces and multiple words
+        String regex = "curse of vanishing|curse of binding|blast protection|fire protection|projectile protection|,| |\\b\\w+\\b";
 
-        String holdToken = "";  // hold token until space or ','
-        for (int i = 0; i < str.length(); i++) {
-            // if current char is space or ',', add to tokensList and reset holdToken
-            if (Character.isWhitespace(str.charAt(i)) || str.charAt(i) == ',') {
-                if (!holdToken.isEmpty()) {
-                    tokensList.add(holdToken);
-                    holdToken = "";
-                }
-                if (str.charAt(i) == ',') {
-                    tokensList.add(String.valueOf(str.charAt(i)));
-                }
-            } else {
-                holdToken += str.charAt(i);
-            }
+        // tokenize string based on regex strings
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(enchantedArmor);
+
+        // add tokens to ArrayList, then return as array
+        ArrayList<String> enchanted_armor_tokenized = new ArrayList<>();
+        while (matcher.find()) {
+            enchanted_armor_tokenized.add(matcher.group());
         }
-        return tokensList.toArray(new String[0]);
-    }
-
-    // properly segregates these multi-word tokens into their own indices
-    // blast protection, fire protection, projectile protection
-    // curse of binding, curse of vanishing
-    public String[] tokenizeArray(String[] arr) {
-        checker = new TokenChecker();
-        ArrayList<String> tokenized = new ArrayList<>();
-        int i = 0;
-        while (i < arr.length) {
-            String threeWords = "", twoWords = "";
-
-            if (i+2 < arr.length) {
-                threeWords = (arr[i]+" "+arr[i+1]+" "+arr[i+2]).toLowerCase();
-            }
-            if (i+1 < arr.length) {
-                twoWords = (arr[i]+" "+ arr[i+1]).toLowerCase();
-            }
-
-            if (checker.isEnchantmentWithoutLevel(threeWords)) {
-                tokenized.add(arr[i]+" "+arr[i+1]+" "+arr[i+2]);
-                i+=3;
-            } else if (checker.isArmorEnchantment(twoWords)) {
-                tokenized.add(arr[i]+" "+ arr[i+1]);
-                i+=2;
-            } else {
-                tokenized.add(arr[i]);
-                i++;
-            }
-        }
-        return tokenized.toArray(new String[0]);
-    }
-
-    public String[] tokenizeArrayToLowerCase(String[] arr) {
-        checker = new TokenChecker();
-        ArrayList<String> tokenized = new ArrayList<>();
-        int i = 0;
-        while (i < arr.length) {
-            String threeWords = "", twoWords = "";
-            if (i + 2 < arr.length) {
-                threeWords = (arr[i] + " " + arr[i + 1] + " " + arr[i + 2]).toLowerCase();
-            }
-            if (i + 1 < arr.length) {
-                twoWords = (arr[i] + " " + arr[i + 1]).toLowerCase();
-            }
-
-            if (checker.isEnchantmentWithoutLevel(threeWords)) {
-                tokenized.add(threeWords);
-                i += 3;
-            } else if (checker.isArmorEnchantment(twoWords)) {
-                tokenized.add(twoWords);
-                i += 2;
-            } else {
-                tokenized.add(arr[i].toLowerCase());
-                i++;
-            }
-        }
-        return tokenized.toArray(new String[0]);
+        return enchanted_armor_tokenized.toArray(new String[0]);
     }
 
     public void showTokens(String[] enchantedArmorToken) {
         TokenChecker checker = new TokenChecker();
-        String hold, lowerCaseToken;
+        String hold;
 
         // iterate through user input string
         for (int i = 0; i < enchantedArmorToken.length; i++) {
-            hold = enchantedArmorToken[i];
-            lowerCaseToken = hold.toLowerCase();
+            try {
+                hold = enchantedArmorToken[i];
 
-            // determine token type
-            if (checker.isArmorMaterial(lowerCaseToken))
-                System.out.println(hold + "\t\t→\t<armor_material>");
-            else if (i > 0 && checker.isLeather(enchantedArmorToken[i - 1].toLowerCase()) && checker.isLeatherArmorPiece(lowerCaseToken))
-                System.out.println(hold + "\t\t→\t<leather_armor_piece>");
-            else if (checker.isArmorPiece(lowerCaseToken))
-                System.out.println(hold + "\t\t→\t<armor_piece>");
-            else if (checker.isPreposition(lowerCaseToken))
-                System.out.println(hold + "\t\t→\t<preposition>");
-            else if (checker.isEnchantmentWithLevel(lowerCaseToken))
-                if (checker.isArmorEnchantment(lowerCaseToken))
-                    System.out.println(hold + "\t→\t<armor_enchantment>");
+                // determine what token type
+                if (checker.isArmorMaterial(enchantedArmorToken[i]))
+                    System.out.println(hold + "\t\t→\t<armor_material>");
+                else if (i > 0 && checker.isLeather(enchantedArmorToken[i - 1]) && checker.isLeatherArmorPiece(enchantedArmorToken[i]))
+                    System.out.println(hold + "\t\t→\t<leather_armor_piece>");
+                else if (checker.isArmorPiece(enchantedArmorToken[i]))
+                    System.out.println(hold + "\t\t→\t<armor_piece>");
+                else if (checker.isPreposition(enchantedArmorToken[i]))
+                    System.out.println(hold + "\t\t→\t<preposition>");
+                else if (checker.isEnchantmentWithLevel(enchantedArmorToken[i])) {
+                    if (checker.isArmorEnchantment(enchantedArmorToken[i]))
+                        System.out.println(hold + "\t→\t<armor_enchantment>");
+                    else
+                        System.out.println(hold + "\t→\t<enchantment_with_level>");
+                } else if (checker.isEnchantmentWithLevel(enchantedArmorToken[i - 1]) && checker.isLevel(enchantedArmorToken[i]))
+                    System.out.println(hold + "\t\t\t→\t<level>");
+                else if (checker.isEnchantmentWithoutLevel(enchantedArmorToken[i]))
+                    System.out.println(hold + "\t→\t<enchantment_without_level>");
+                else if (checker.isPunctuation(enchantedArmorToken[i]))
+                    System.out.println(hold + "\t\t\t→\t<punctuation>");
+                else if (checker.isOneSpace(enchantedArmorToken[i])) {
+                    System.out.println("\"" + hold + "\"" + "\t\t→\t<space>");
+                    isValid = true;
+                    if (checker.isOneSpace(enchantedArmorToken[i-1])) {
+                        System.out.println("Syntax error ur not allowed mutliple spaces play minecraft");
+                        isValid = false;
+                        break;
+                    }
+                }
                 else
-                    System.out.println(hold + "\t→\t<enchantment_with_level>");
-            else if (i>=1 && checker.isEnchantmentWithLevel(enchantedArmorToken[i-1].toLowerCase()) && checker.isLevel(lowerCaseToken))
-                System.out.println(hold + "\t\t\t→\t<level>");
-            else if (checker.isEnchantmentWithoutLevel(lowerCaseToken))
-                System.out.println(hold + "\t→\t<enchantment_without_level>");
-            else if (checker.isPunctuation(lowerCaseToken))
-                System.out.println(hold + "\t\t\t→\t<punctuation>");
-            else
-                System.out.println(hold + "\t\t→\t<unknown>");
+                    System.out.println(hold + "\t\t→\t<unknown>");
+            } catch (ArrayIndexOutOfBoundsException e) {
+                //System.out.println("Input does not follow grammar rules. Go play Minecraft and check.");
+            }
         }
     }
+
+
 }

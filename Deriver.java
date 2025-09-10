@@ -69,11 +69,10 @@ public class Deriver {
         ));
     }
 
-    public void derive(String[] originalTokens, String[] lowerCaseTokens) {
-        System.out.println("Phase 2: Derivation (leftmost derivation)");
+    public void derive(String[] originalTokens) {
         ArrayList<String> initialSymbols = new ArrayList<>();
         initialSymbols.add("<enchanted_armor>");
-        List<String> derivationResult = deriveRecursive(initialSymbols, originalTokens, lowerCaseTokens, 0);
+        List<String> derivationResult = deriveRecursive(initialSymbols, originalTokens, 0);
 
         if (derivationResult != null) {
             System.out.println(listToString(initialSymbols, 0, originalTokens));
@@ -85,27 +84,23 @@ public class Deriver {
         }
     }
 
-    public List<String> deriveRecursive(List<String> currentSymbols, String[] originalTokens, String[] lowerCaseTokens, int tokenIndex) {
-        if (currentSymbols.isEmpty() && tokenIndex==lowerCaseTokens.length)
+    public List<String> deriveRecursive(List<String> currentSymbols, String[] originalTokens, int tokenIndex) {
+        if (currentSymbols.isEmpty() && tokenIndex == originalTokens.length)
             return new ArrayList<>();
-        if (currentSymbols.isEmpty() || tokenIndex>lowerCaseTokens.length)
+        if (currentSymbols.isEmpty() || tokenIndex > originalTokens.length)
             return null;
 
         String currentSymbol = currentSymbols.get(0);
 
-        // if current symbol is a terminal, try to matc
         if (!currentSymbol.startsWith("<") && !currentSymbol.endsWith(">")) {
-            if (tokenIndex < lowerCaseTokens.length && currentSymbol.equalsIgnoreCase(lowerCaseTokens[tokenIndex])) {
+            if (tokenIndex < originalTokens.length && currentSymbol.equals(originalTokens[tokenIndex])) {
                 ArrayList<String> nextSymbols = new ArrayList<>(currentSymbols);
                 nextSymbols.remove(0);
-                List<String> result = deriveRecursive(nextSymbols, originalTokens, lowerCaseTokens, tokenIndex + 1);
-                if (result != null)
-                    return result;
+                return deriveRecursive(nextSymbols, originalTokens, tokenIndex + 1);
             }
             return null;
         }
 
-        // if current token is a non-terminal, check grammar rules
         List<List<String>> productions = GRAMMAR.get(currentSymbol);
         if (productions != null) {
             for (List<String> production : productions) {
@@ -113,7 +108,7 @@ public class Deriver {
                 nextSymbols.remove(0);
                 nextSymbols.addAll(0, production);
 
-                List<String> result = deriveRecursive(nextSymbols, originalTokens, lowerCaseTokens, tokenIndex);
+                List<String> result = deriveRecursive(nextSymbols, originalTokens, tokenIndex);
 
                 if (result != null) {
                     String step = listToString(nextSymbols, tokenIndex, originalTokens);
@@ -128,30 +123,30 @@ public class Deriver {
     public String listToString(List<String> symbols, int matchedCount, String[] originalTokens) {
         String result = "";
 
-        // append tokens from originalTokens array
-        for (int i=0; i<matchedCount; i++) {
+        for (int i = 0; i < matchedCount; i++) {
             result += originalTokens[i];
-            // if token is not a comma, add space
-            if (i < matchedCount-1 && !originalTokens[i+1].equals(",")) {
+            if (i < matchedCount - 1 && !originalTokens[i + 1].equals(",")) {
                 result += " ";
             }
         }
 
-        // put space between tokens
-        if (!symbols.isEmpty() && result.length()>0 && !symbols.get(0).equals(",")) {
+        if (!symbols.isEmpty() && result.length() > 0 && !symbols.get(0).equals(",")) {
             result += " ";
         }
 
-        // append other symbols
-        for (int i=0; i<symbols.size(); i++) {
+        for (int i = 0; i < symbols.size(); i++) {
             String symbol = symbols.get(i);
             result += symbol;
-            // if next symbol is not a comma, put space
-            if (i<symbols.size()-1 && !symbols.get(i+1).equals(",")) {
+            if (i < symbols.size() - 1 && !symbols.get(i + 1).equals(",")) {
                 result += " ";
             }
         }
-
         return result.trim();
+    }
+
+    public static void main(String[] args) {
+        Deriver deriver = new Deriver();
+        String[] tokens = "Iron Boots with Mending".split(" ");
+        deriver.derive(tokens);
     }
 }

@@ -2,12 +2,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TokenChecker {
-    private static List<String> ARMOR_MATERIALS = Arrays.asList("leather", "chainmail", "iron", "gold", "diamond", "netherite");
-    private static List<String> LEATHER_ARMOR_PIECES = Arrays.asList("cap", "tunic", "pants", "boots");
-    private static List<String> ARMOR_PIECES = Arrays.asList("helmet", "chestplate", "leggings", "boots");
-    private static List<String> ARMOR_ENCHANTMENTS = Arrays.asList("blast protection", "fire protection", "projectile protection", "thorns", "protection");
-    private static List<String> ENCHANTMENT_WITHOUT_LEVEL = Arrays.asList("mending", "curse of vanishing", "curse of binding");
-    private static List<String> LEVELS = Arrays.asList("i", "ii", "iii", "iv");
+    private static List<String> ARMOR_MATERIALS = Arrays.asList("Leather", "Chainmail", "Iron", "Gold", "Diamond", "Netherite");
+    private static List<String> LEATHER_ARMOR_PIECES = Arrays.asList("Cap", "Tunic", "Pants", "Boots");
+    private static List<String> ARMOR_PIECES = Arrays.asList("Helmet", "Chestplate", "Leggings", "Boots");
+    private static List<String> ARMOR_ENCHANTMENTS = Arrays.asList("Blast Protection", "Fire Protection", "Projectile Protection", "Thorns", "Protection");
+    private static List<String> ENCHANTMENT_WITHOUT_LEVEL = Arrays.asList("Mending", "Curse of Vanishing", "Curse of Binding");
+    private static List<String> LEVELS = Arrays.asList("I", "II", "III", "IV");
 
     public boolean isArmorMaterial(String armorMat) {
         return ARMOR_MATERIALS.contains(armorMat);
@@ -33,7 +33,7 @@ public class TokenChecker {
         return ARMOR_ENCHANTMENTS.contains(armorEnch);
     }
 
-    public boolean isEnchantmentWithLevel(String enchWithLvl) { return isArmorEnchantment(enchWithLvl) || enchWithLvl.equals("unbreaking"); }
+    public boolean isEnchantmentWithLevel(String enchWithLvl) { return isArmorEnchantment(enchWithLvl) || enchWithLvl.equals("Unbreaking"); }
 
     public boolean isEnchantmentWithoutLevel(String enchNoLvl) {
         return ENCHANTMENT_WITHOUT_LEVEL.contains(enchNoLvl);
@@ -45,5 +45,9 @@ public class TokenChecker {
 
     public boolean isPunctuation(String punc) {
         return punc.equals(",");
+    }
+
+    public boolean isOneSpace(String space) {
+        return space.equals(" ");
     }
 }
