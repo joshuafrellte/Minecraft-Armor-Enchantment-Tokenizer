@@ -9,6 +9,7 @@ public class MinecraftTokenizer {
     public static void main(String[] args) {
         MinecraftTokenizer tokenizer = new MinecraftTokenizer();
         Deriver deriver = new Deriver();
+        System.out.println("[]=====[ MINECRAFT ARMOR ENCHANTMENT TOKENIZER =====>");
         String input = tokenizer.getString();
         System.out.println("Phase 1: CFG-Based Classification");
         /*
@@ -20,10 +21,11 @@ public class MinecraftTokenizer {
         tokenizer.showTokens(tokens);
 
         System.out.println("\nPhase 2: Derivation");
+
         if (tokenizer.isValid) {
             deriver.derive(removeSpace(tokens));
         } else {
-            System.out.println("Syntax error too");
+            System.out.println("Invalid spacing! Go play Minecraft and check.");
         }
 
 
@@ -39,7 +41,7 @@ public class MinecraftTokenizer {
             return false;
         }
     }
-    // you wont guess what this does
+    // REMOVE SPACES FROM TOKENIZED STRING!!!!!!!!!!!!!!!!!!!
     public static String[] removeSpace(String[] arr) {
         ArrayList<String> newList = new ArrayList<>();
         for (String element : arr) {
@@ -104,9 +106,10 @@ public class MinecraftTokenizer {
                     System.out.println("\"" + hold + "\"" + "\t\t→\t<space>");
                     isValid = true;
                     if (checker.isOneSpace(enchantedArmorToken[i-1])) {
-                        System.out.println("Syntax error ur not allowed mutliple spaces play minecraft");
+                        System.out.println("\"" + hold + "\"" + "\t\t→\t<space>");
+                        //System.out.println("Multiple spaces are not allowed! Play Minecraft!");
                         isValid = false;
-                        break;
+                        //break;
                     }
                 }
                 else
